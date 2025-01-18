@@ -1,13 +1,22 @@
 import { useOutletContext } from 'react-router-dom';
-import { IContext, IResponse } from '../../../../helpers/types';
+import { IContext, IPost, IResponse } from '../../../../helpers/types';
 import { useRef, useState } from 'react';
 import { Http } from '../../../../helpers/api';
 import { BASE_URL } from '../../../../helpers/constants';
+import { useHttpQuery } from '../../../../helpers/useHttp';
 
 export const ProfileHeader = () => {
     const { user, refetch } = useOutletContext<IContext>();
     const photo = useRef<null | HTMLInputElement>(null);
     const [preview, setPreview] = useState('');
+    const { data } = useHttpQuery<IResponse>('/posts');
+    const posts: IPost[] | null = data?.payload
+        ? (data?.payload as IPost[])
+        : null;
+
+    if (!posts?.length) {
+        return <h1>No Posts</h1>;
+    }
     const handleChange = () => {
         const upload = photo.current?.files?.[0];
         if (!upload) return;
@@ -30,9 +39,10 @@ export const ProfileHeader = () => {
             setPreview('');
         });
     };
+    console.log(user);
     return (
         user && (
-            <div className="min-h-screen bg-gray-900 text-white flex flex-col items-start p-6">
+            <div className=" bg-gray-900 text-white flex flex-col items-start p-6">
                 <div className="flex items-center gap-6 mb-6">
                     <img
                         onClick={() => photo.current?.click()}
@@ -97,7 +107,9 @@ export const ProfileHeader = () => {
                         <p className="text-gray-400 text-sm">Following</p>
                     </div>
                     <div className="flex flex-col">
-                        <p className="text-sm font-bold text-blue-400">0</p>
+                        <p className="text-sm font-bold text-blue-400">
+                            {posts.length}
+                        </p>
                         <p className="text-gray-400 text-sm">Posts</p>
                     </div>
                 </div>

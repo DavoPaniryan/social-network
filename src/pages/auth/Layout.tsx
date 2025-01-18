@@ -5,13 +5,14 @@ export const Layout = () => {
     const links = [
         { name: 'Home', href: '/profile' },
         { name: 'Settings', href: '/profile/settings' },
+        { name: 'Requests', href: '/profile/requests' },
         { name: 'Followers', href: '/profile/followers' },
         { name: 'Followings', href: '/profile/followings' },
         { name: 'Messages', href: '/profile/messages' },
     ];
     const navigate = useNavigate();
 
-    const { data, loading } = useHttpQuery<IResponse>('/verify');
+    const { data, loading, refetch } = useHttpQuery<IResponse>('/verify');
     const [logout] = useHttpMutation<IResponse>(() => navigate('/'));
 
     if (loading) {
@@ -42,7 +43,7 @@ export const Layout = () => {
                 </div>
             </nav>
             <main className="container mx-auto px-4 py-6">
-                <Outlet context={{ user: data.user }} />
+                <Outlet context={{ user: data.user, refetch }} />
             </main>
         </div>
     );
